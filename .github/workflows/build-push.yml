@@ -39,8 +39,9 @@ jobs:
     - name:  Update k8s manifest
       run: |
           echo ${{ github.sha }}
-          'sed -i "s|image:.*|image: matiuh/argo-app-test:${{ github.sha }}|g" argo-k8s-configs/manifests/app-test/deployment.yml'
-          cat argo-k8s-configs/manifests/app-test/deployment.yml | grep "image:"
+          ls
+          'sed -i "s|image:.*|image: matiuh/argo-app-test:${{ github.sha }}|g" /manifests/app-test/deployment.yml'
+          cat /manifests/app-test/deployment.yml | grep "image:"
 
     - name: Pushes to another repository
       uses: cpina/github-action-push-to-another-repository@main
