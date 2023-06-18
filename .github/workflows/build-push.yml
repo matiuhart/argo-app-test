@@ -1,0 +1,49 @@
+name: Build y despliegue de test
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        push: true
+        tags: matiuh/argo-app-test:latest
+
+  k8s-manifest-update:
+   #$GITHUB_JOB
+    #$GITHUB_RUN_ID
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Clone app repo
+      uses: GuillaumeFalourd/clone-github-repo-action@v2
+      with:
+        owner: 'matiuhart'
+        repository: 'argo-k8s-configs'
+        access-token: ${{ secrets.API_TOKEN_GITHUB }}
+
+    - name:  Update k8s manifest
+      run: |
+          echo $GITHUB_RUN_ID
+          'sed -i "s|image:.*|image: matiuh/argo-app-test:$GITHUB_RUN_ID|g" argo-k8s-configs/manifests/app-test/deployment.yml'
+          cat argo-k8s-configs/manifests/app-test/deployment.yml | grep "image:"
+
+    - name: Pushes to another repository
+      uses: cpina/github-action-push-to-another-repository@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source-directory: 'argo-k8s-configs'
+        destination-github-username: 'matiuhart'
+        destination-repository-name: 'argo-k8s-configs'
+        user-email: matias@mtu-it.com.ar
+        target-branch: master
