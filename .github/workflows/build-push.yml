@@ -2,9 +2,7 @@ name: Build y despliegue de test
 on:
   push:
     branches: [ "master" ]
-env:
-  GITHUB_RUN_ID: ${{ steps.get_env.outputs.GITHUB_RUN_ID }}
-  
+
 jobs:
   build-push:
     runs-on: ubuntu-latest
@@ -18,7 +16,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         push: true
-        tags: matiuh/argo-app-test:$GITHUB_RUN_ID
+        repository: matiuh/argo-app-test
+        tags: $GITHUB_RUN_ID
 
   k8s-manifest-update:
    #$GITHUB_JOB
