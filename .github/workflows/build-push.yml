@@ -2,7 +2,9 @@ name: Build y despliegue de test
 on:
   push:
     branches: [ "master" ]
-
+env:
+  GITHUB_RUN_ID: ${{ steps.get_env.outputs.GITHUB_RUN_ID }}
+  
 jobs:
   build-push:
     runs-on: ubuntu-latest
