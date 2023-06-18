@@ -40,8 +40,8 @@ jobs:
       run: |
           echo ${{ github.sha }}
           ls
-          'sed -i "s|image:.*|image: matiuh/argo-app-test:${{ github.sha }}|g" /manifests/app-test/deployment.yml'
-          cat /manifests/app-test/deployment.yml | grep "image:"
+          'sed -i "s|image:.*|image: matiuh/argo-app-test:${{ github.sha }}|g" argo-k8s-configs/manifests/deployment.yaml'
+          cat argo-k8s-configs/manifests/deployment.yaml | grep "image:"
 
     - name: Pushes to another repository
       uses: cpina/github-action-push-to-another-repository@main
